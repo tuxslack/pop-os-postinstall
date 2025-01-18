@@ -4,6 +4,7 @@
 #
 # Website:       https://diolinux.com.br
 # Autor:         Dionatan Simioni
+# Colaboração:   Fernando Souza - https://www.youtube.com/@fernandosuporte/
 #
 # ------------------------------------------------------------------------ #
 #
@@ -11,6 +12,29 @@
 #   $ ./pos-os-postinstall.sh
 #
 # ----------------------------- VARIÁVEIS ----------------------------- #
+
+
+
+
+
+clear
+
+# -------------------------------------------------------------------------------------------------
+
+# Verificar se os programas estão instalados:
+
+which sudo        1> /dev/null || exit 1
+which apt         1> /dev/null || exit 2
+which ping        1> /dev/null || exit 3
+which wget        1> /dev/null || exit 4
+which dpkg        1> /dev/null || exit 5
+which flatpak     1> /dev/null || exit 6
+which snap        1> /dev/null || exit 7
+which nautilus    1> /dev/null || exit 8
+
+# -------------------------------------------------------------------------------------------------
+
+
 set -e
 
 ##URLS
@@ -24,7 +48,7 @@ URL_SYNOLOGY_DRIVE="https://global.download.synology.com/download/Utility/Synolo
 ##DIRETÓRIOS E ARQUIVOS
 
 DIRETORIO_DOWNLOADS="$HOME/Downloads/programas"
-FILE="/home/$USER/.config/gtk-3.0/bookmarks"
+FILE="$HOME/.config/gtk-3.0/bookmarks"
 
 
 #CORES
@@ -46,22 +70,36 @@ apt_update(){
 # -------------------------------TESTES E REQUISITOS----------------------------------------- #
 
 # Internet conectando?
+
 testes_internet(){
-if ! ping -c 1 8.8.8.8 -q &> /dev/null; then
+
+
+# Para verificar o arquivo /etc/resolv.conf
+
+if ! ping -c 1 www.google.com.br -q &> /dev/null; then
+
   echo -e "${VERMELHO}[ERROR] - Seu computador não tem conexão com a Internet. Verifique a rede.${SEM_COR}"
+  
   exit 1
+  
 else
+
   echo -e "${VERDE}[INFO] - Conexão com a Internet funcionando normalmente.${SEM_COR}"
+  
 fi
+
 }
 
 # ------------------------------------------------------------------------------ #
 
 
 ## Removendo travas eventuais do apt ##
+
 travas_apt(){
-  sudo rm /var/lib/dpkg/lock-frontend
-  sudo rm /var/cache/apt/archives/lock
+
+  sudo rm -Rf /var/lib/dpkg/lock-frontend
+  sudo rm -Rf /var/cache/apt/archives/lock
+  
 }
 
 ## Adicionando/Confirmando arquitetura de 32 bits ##
@@ -126,10 +164,12 @@ for nome_do_programa in ${PROGRAMAS_PARA_INSTALAR[@]}; do
 done
 
 }
+
 ## Instalando pacotes Flatpak ##
+
 install_flatpaks(){
 
-  echo -e "${VERDE}[INFO] - Instalando pacotes flatpak${SEM_COR}"
+echo -e "${VERDE}[INFO] - Instalando pacotes flatpak${SEM_COR}"
 
 flatpak install flathub com.obsproject.Studio -y
 flatpak install flathub org.gimp.GIMP -y
@@ -175,29 +215,34 @@ nautilus -q
 # -------------------------------------------------------------------------- #
 # ----------------------------- CONFIGS EXTRAS ----------------------------- #
 
-#Cria pastas para produtividade no nautilus
+# Cria pastas para produtividade no nautilus
+
 extra_config(){
 
 
-mkdir /home/$USER/TEMP
-mkdir /home/$USER/EDITAR 
-mkdir /home/$USER/Resolve
-mkdir /home/$USER/AppImage
-mkdir /home/$USER/Vídeos/'OBS Rec'
+mkdir -p $HOME/TEMP
+mkdir -p $HOME/EDITAR 
+mkdir -p $HOME/Resolve
+mkdir -p $HOME/AppImage
+mkdir -p $HOME/Vídeos/'OBS Rec'
 
-#Adiciona atalhos ao Nautilus
+# Adiciona atalhos ao Nautilus
 
 if test -f "$FILE"; then
+
     echo "$FILE já existe"
+    
 else
+
     echo "$FILE não existe, criando..."
-    touch /home/$USER/.config/gkt-3.0/bookmarks
+    
+    touch $HOME/.config/gkt-3.0/bookmarks
 fi
 
-echo "file:///home/$USER/EDITAR 🔵 EDITAR" >> $FILE
-echo "file:///home/$USER/AppImage" >> $FILE
-echo "file:///home/$USER/Resolve 🔴 Resolve" >> $FILE
-echo "file:///home/$USER/TEMP 🕖 TEMP" >> $FILE
+echo "file://$HOME/EDITAR 🔵 EDITAR" >> $FILE
+echo "file://$HOME/AppImage" >> $FILE
+echo "file://$HOME/Resolve 🔴 Resolve" >> $FILE
+echo "file://$HOME/TEMP 🕖 TEMP" >> $FILE
 }
 
 # -------------------------------------------------------------------------------- #
